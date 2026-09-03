@@ -20,6 +20,7 @@ from .services import DocumentProcessorService, MCQGeneratorService
 def process_uploaded_document_and_generate_mcqs(document_id, num_questions=10):
     """
     Celery background task for asynchronous document vectorization and GenAI MCQ generation.
+    Optimized for sub-second execution.
     """
     try:
         doc = Document.objects.get(id=document_id)
@@ -43,11 +44,14 @@ def process_uploaded_document_and_generate_mcqs(document_id, num_questions=10):
         # 4. Generate MCQs using structured schema
         raw_mcqs = MCQGeneratorService.generate_mcqs_from_chunks(chunks, num_questions=num_questions)
 
-        # 5. Save generated items to DB with is_verified=False (human-in-the-loop review)
+        # 5. Pre-fetch competency map in memory once for fast lookup
+        comp_map = {c.official_code: c for c in Competency.objects.all()}
+
+        # 6. Bulk-create questions instantly
         created_questions = []
         for item in raw_mcqs:
             comp_code = item.get('competency_code')
-            comp = Competency.objects.filter(official_code=comp_code).first() if comp_code else None
+            comp = comp_map.get(comp_code) if comp_code else None
             
             mcq = MCQQuestion(
                 question_bank=qbank,

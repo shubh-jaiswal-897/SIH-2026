@@ -7,58 +7,45 @@ from competencies.models import Competency
 
 class DocumentProcessorService:
     @staticmethod
-    def extract_text_from_pdf(pdf_path: str) -> List[Dict[str, Any]]:
-        """Extracts text per page from PDF using pypdf."""
+    def extract_text_from_pdf(pdf_path: str, max_pages=15) -> List[Dict[str, Any]]:
+        """Extracts text per page from PDF using pypdf (optimized to max 15 pages for speed)."""
         pages_content = []
         try:
             reader = PdfReader(pdf_path)
-            for idx, page in enumerate(reader.pages):
+            total = min(len(reader.pages), max_pages)
+            for idx in range(total):
+                page = reader.pages[idx]
                 text = page.extract_text() or ""
-                pages_content.append({
-                    "page_number": idx + 1,
-                    "text": text.strip()
-                })
+                if text.strip():
+                    pages_content.append({
+                        "page_number": idx + 1,
+                        "text": text.strip()
+                    })
         except Exception as e:
             print(f"Error reading PDF {pdf_path}: {e}")
         return pages_content
 
     @staticmethod
     def chunk_text(pages_content: List[Dict[str, Any]], chunk_size=1000, chunk_overlap=150) -> List[Dict[str, Any]]:
-        """Chunks text with page citation metadata."""
+        """Fast text chunking with citation metadata."""
         chunks = []
-        try:
-            from langchain.text_splitter import RecursiveCharacterTextSplitter
-            splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-            
-            for page in pages_content:
-                text_splits = splitter.split_text(page["text"])
-                for s_idx, split in enumerate(text_splits):
-                    if len(split.strip()) > 50:
-                        chunks.append({
-                            "chunk_id": len(chunks) + 1,
-                            "page_number": page["page_number"],
-                            "text": split,
-                            "source_citation": f"Page {page['page_number']}, Section {s_idx + 1}"
-                        })
-        except ImportError:
-            # Simple fallback splitter if langchain text_splitter unavailable
-            for page in pages_content:
-                text = page["text"]
-                for i in range(0, len(text), chunk_size - chunk_overlap):
-                    snippet = text[i:i + chunk_size]
-                    if len(snippet.strip()) > 50:
-                        chunks.append({
-                            "chunk_id": len(chunks) + 1,
-                            "page_number": page["page_number"],
-                            "text": snippet,
-                            "source_citation": f"Page {page['page_number']}, Chunk {i//chunk_size + 1}"
-                        })
+        for page in pages_content:
+            text = page["text"]
+            for i in range(0, len(text), chunk_size - chunk_overlap):
+                snippet = text[i:i + chunk_size]
+                if len(snippet.strip()) > 50:
+                    chunks.append({
+                        "chunk_id": len(chunks) + 1,
+                        "page_number": page["page_number"],
+                        "text": snippet,
+                        "source_citation": f"Page {page['page_number']}, Section {i//chunk_size + 1}"
+                    })
         return chunks
 
 
 class MCQGeneratorService:
     @staticmethod
-    def generate_mcqs_from_chunks(chunks: List[Dict[str, Any]], num_questions=10) -> List[Dict[str, Any]]:
+    def generate_mcqs_from_chunks(chunks: List[Dict[str, Any]], num_questions=8) -> List[Dict[str, Any]]:
         """
         Generates structured MCQs adhering to MoSPI domain standards and Bloom's Taxonomy.
         Uses OpenAI if API key is set; otherwise uses domain-tailored Intelligent Fallback RAG generator.
@@ -114,7 +101,6 @@ Allowed blooms_level values: 'Remembering', 'Understanding', 'Applying', 'Analyz
     @staticmethod
     def _generate_mospi_domain_mcqs(chunks: List[Dict[str, Any]], num_questions: int) -> List[Dict[str, Any]]:
         """Intelligent domain RAG generator for MoSPI materials."""
-        all_competencies = list(Competency.objects.all())
         
         # Template pool covering MoSPI domains: PLFS, CPI, WPI, NAS, Sampling Error
         templates = [
