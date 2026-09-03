@@ -11,13 +11,13 @@
             <span class="bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full uppercase">
                 Practical Statistical Audit Simulator
             </span>
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-2">MoSPI Survey Return Anomaly Audit Challenge</h1>
-            <p class="text-xs text-slate-400 mt-1">
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-2" data-i18n="anomalyTitle">MoSPI Survey Return Anomaly Audit Challenge</h1>
+            <p class="text-xs text-slate-400 mt-1" data-i18n="anomalySub">
                 Analyze live PLFS, CPI, and NAS survey returns to spot statistical outliers, decimal point errors, and physical improbabilities.
             </p>
         </div>
 
-        <a href="{% url 'officer_dashboard' %}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs shadow-lg transition">
+        <a href="{% url 'officer_dashboard' %}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs shadow-lg transition" data-i18n="backToDashboard">
             Back to Dashboard
         </a>
     </div>
@@ -84,18 +84,18 @@
 
             <!-- Action Prompt -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-                <div class="text-xs font-semibold text-slate-700">
+                <div class="text-xs font-semibold text-slate-700" data-i18n="auditDecision">
                     Audit Decision: Does this survey return contain a statistical data anomaly?
                 </div>
 
                 <div class="flex gap-3">
                     <button @click="userGuessed = true; revealed = true" :disabled="revealed"
                             class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl text-xs shadow transition disabled:opacity-60 flex items-center gap-1">
-                        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Flag Anomaly
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i> <span data-i18n="flagAnomaly">Flag Anomaly</span>
                     </button>
                     <button @click="userGuessed = false; revealed = true" :disabled="revealed"
                             class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow transition disabled:opacity-60 flex items-center gap-1">
-                        <i data-lucide="check-circle" class="w-4 h-4"></i> Accept Valid
+                        <i data-lucide="check-circle" class="w-4 h-4"></i> <span data-i18n="acceptValid">Accept Valid</span>
                     </button>
                 </div>
             </div>
