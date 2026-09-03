@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" x-data="languageStore()" x-init="initLang()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,19 +16,124 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
     </style>
+    <script>
+        function languageStore() {
+            return {
+                currentLang: localStorage.getItem('mospi_lang') || 'en',
+                translations: {
+                    en: {
+                        gov: "GOVERNMENT OF INDIA",
+                        mospi: "Ministry of Statistics and Programme Implementation (MoSPI)",
+                        frac: "Mission Karmayogi FRAC Compliant",
+                        nssta: "NSSTA Portal",
+                        dashboard: "Dashboard",
+                        matrix: "FRAC Matrix",
+                        igot: "iGOT Courses",
+                        rag: "RAG Generator",
+                        logout: "Logout",
+                        platformTitle: "SatatSankhyiki",
+                        subtitle: "MoSPI Competency & iGOT Ecosystem"
+                    },
+                    hi: {
+                        gov: "भारत सरकार",
+                        mospi: "सांख्यिकी और कार्यक्रम कार्यान्वयन मंत्रालय (MoSPI)",
+                        frac: "मिशन कर्मयोगी FRAC अनुपालित",
+                        nssta: "NSSTA पोर्टल",
+                        dashboard: "डैशबोर्ड",
+                        matrix: "FRAC मैट्रिक्स",
+                        igot: "iGOT पाठ्यक्रम",
+                        rag: "RAG जनरेटर",
+                        logout: "लॉगआउट",
+                        platformTitle: "सततसांख्यिकी",
+                        subtitle: "MoSPI क्षमता और iGOT पारिस्थितिकी तंत्र"
+                    },
+                    mr: {
+                        gov: "भारत सरकार",
+                        mospi: "सांख्यिकी आणि कार्यक्रम अंमलबजावणी मंत्रालय",
+                        frac: "मिशन कर्मयोगी FRAC सुसंगत",
+                        nssta: "NSSTA पोर्टल",
+                        dashboard: "डॅशबोर्ड",
+                        matrix: "FRAC मॅट्रिक्स",
+                        igot: "iGOT अभ्यासक्रम",
+                        rag: "RAG जनरेटर",
+                        logout: "लॉगआउट",
+                        platformTitle: "सततसांख्यिकी",
+                        subtitle: "MoSPI क्षमता आणि iGOT परिसंस्था"
+                    },
+                    bn: {
+                        gov: "ভারত সরকার",
+                        mospi: "পরিসংখ্যান ও কর্মসূচি বাস্তবায়ন মন্ত্রক",
+                        frac: "মিশন কর্মযোগী FRAC সম্মত",
+                        nssta: "NSSTA পোর্টাল",
+                        dashboard: "ড্যাশবোর্ড",
+                        matrix: "FRAC ম্যাট্রিক্স",
+                        igot: "iGOT কোর্স",
+                        rag: "RAG জেনারেটর",
+                        logout: "লগআউট",
+                        platformTitle: "সততসাংখ্যিকী",
+                        subtitle: "MoSPI দক্ষতা এবং iGOT ইকোসিস্টেম"
+                    },
+                    ta: {
+                        gov: "இந்திய அரசு",
+                        mospi: "புள்ளியியல் மற்றும் திட்ட அமலாக்க அமைச்சகம்",
+                        frac: "மிஷன் கர்மயோகி FRAC இணக்கமானது",
+                        nssta: "NSSTA போர்டல்",
+                        dashboard: "டாஷ்போர்டு",
+                        matrix: "FRAC மேட்ரிக்ஸ்",
+                        igot: "iGOT பாடநெறிகள்",
+                        rag: "RAG ஜெனரேட்டர்",
+                        logout: "வெளியேறு",
+                        platformTitle: "சததசாங்கியகி",
+                        subtitle: "MoSPI திறன் மற்றும் iGOT சுற்றுச்சூழல்"
+                    }
+                },
+                initLang() {
+                    this.applyTranslations();
+                },
+                setLang(lang) {
+                    this.currentLang = lang;
+                    localStorage.setItem('mospi_lang', lang);
+                    this.applyTranslations();
+                },
+                t(key) {
+                    return (this.translations[this.currentLang] && this.translations[this.currentLang][key]) 
+                           || this.translations['en'][key] || key;
+                },
+                applyTranslations() {
+                    document.querySelectorAll('[data-i18n]').forEach(el => {
+                        const key = el.getAttribute('data-i18n');
+                        if (key && this.t(key)) {
+                            el.innerText = this.t(key);
+                        }
+                    });
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Government Header Banner -->
+    <!-- Government Header Banner with Language Switcher -->
     <div class="bg-slate-900 border-b border-slate-800 text-white text-xs py-1.5 px-4 sm:px-8 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <span class="font-bold tracking-wider text-amber-400">GOVERNMENT OF INDIA</span>
+            <span class="font-bold tracking-wider text-amber-400" data-i18n="gov">GOVERNMENT OF INDIA</span>
             <span class="text-slate-400">|</span>
-            <span class="text-slate-300">Ministry of Statistics and Programme Implementation (MoSPI)</span>
+            <span class="text-slate-300 hidden md:inline" data-i18n="mospi">Ministry of Statistics and Programme Implementation (MoSPI)</span>
         </div>
         <div class="flex items-center gap-4 text-slate-300">
-            <span>Mission Karmayogi FRAC Compliant</span>
-            <span>NSSTA Portal</span>
+            <span class="hidden sm:inline text-[11px]" data-i18n="frac">Mission Karmayogi FRAC Compliant</span>
+            
+            <!-- Multi-Language Selector Dropdown -->
+            <div class="flex items-center gap-1.5 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">
+                <i data-lucide="globe" class="w-3.5 h-3.5 text-amber-400"></i>
+                <select x-model="currentLang" @change="setLang($event.target.value)" class="bg-transparent text-white text-xs outline-none cursor-pointer">
+                    <option value="en" class="bg-slate-900 text-white">English</option>
+                    <option value="hi" class="bg-slate-900 text-white">हिन्दी (Hindi)</option>
+                    <option value="mr" class="bg-slate-900 text-white">मराठी (Marathi)</option>
+                    <option value="bn" class="bg-slate-900 text-white">বাংলা (Bengali)</option>
+                    <option value="ta" class="bg-slate-900 text-white">தமிழ் (Tamil)</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -43,8 +148,8 @@
                             SS
                         </div>
                         <div>
-                            <div class="font-bold text-lg leading-none tracking-tight text-white">SatatSankhyiki</div>
-                            <div class="text-[11px] text-slate-400 font-medium">MoSPI Competency & iGOT Ecosystem</div>
+                            <div class="font-bold text-lg leading-none tracking-tight text-white" data-i18n="platformTitle">SatatSankhyiki</div>
+                            <div class="text-[11px] text-slate-400 font-medium" data-i18n="subtitle">MoSPI Competency & iGOT Ecosystem</div>
                         </div>
                     </a>
                 </div>
@@ -53,16 +158,16 @@
                 <!-- Nav Links -->
                 <div class="hidden md:flex items-center space-x-1 font-medium text-sm">
                     <a href="{% url 'officer_dashboard' %}" class="px-3 py-2 rounded-md transition hover:bg-slate-700 {% if request.resolver_match.url_name == 'officer_dashboard' %}bg-slate-700 text-amber-400 font-semibold{% else %}text-slate-300{% endif %} flex items-center gap-2">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> <span data-i18n="dashboard">Dashboard</span>
                     </a>
                     <a href="{% url 'competency_matrix' %}" class="px-3 py-2 rounded-md transition hover:bg-slate-700 {% if request.resolver_match.url_name == 'competency_matrix' %}bg-slate-700 text-amber-400 font-semibold{% else %}text-slate-300{% endif %} flex items-center gap-2">
-                        <i data-lucide="award" class="w-4 h-4"></i> FRAC Matrix
+                        <i data-lucide="award" class="w-4 h-4"></i> <span data-i18n="matrix">FRAC Matrix</span>
                     </a>
                     <a href="{% url 'igot_courses' %}" class="px-3 py-2 rounded-md transition hover:bg-slate-700 {% if request.resolver_match.url_name == 'igot_courses' %}bg-slate-700 text-amber-400 font-semibold{% else %}text-slate-300{% endif %} flex items-center gap-2">
-                        <i data-lucide="book-open" class="w-4 h-4"></i> iGOT Courses
+                        <i data-lucide="book-open" class="w-4 h-4"></i> <span data-i18n="igot">iGOT Courses</span>
                     </a>
                     <a href="{% url 'assessment_upload' %}" class="px-3 py-2 rounded-md transition hover:bg-slate-700 {% if request.resolver_match.url_name == 'assessment_upload' %}bg-slate-700 text-amber-400 font-semibold{% else %}text-slate-300{% endif %} flex items-center gap-2">
-                        <i data-lucide="file-up" class="w-4 h-4"></i> RAG Generator
+                        <i data-lucide="file-up" class="w-4 h-4"></i> <span data-i18n="rag">RAG Generator</span>
                     </a>
                 </div>
 
