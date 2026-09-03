@@ -69,14 +69,15 @@ def upload_document_view(request):
             document_type=doc_type
         )
 
-        # Trigger async process task (or direct eager execution if celery worker is off)
-        process_uploaded_document_and_generate_mcqs.delay(doc.id, num_questions=8)
+        # Process document and extract MCQs instantly
+        process_uploaded_document_and_generate_mcqs(doc.id, num_questions=8)
         
         messages.success(
             request, 
-            f"Document '{doc.title}' uploaded successfully! GenAI MCQ extraction task initiated."
+            f"Document '{doc.title}' processed successfully! GenAI MCQs extracted."
         )
         return redirect('review_mcqs', doc_id=doc.id)
+
 
     recent_docs = Document.objects.filter(uploaded_by=request.user).order_by('-created_at')[:10]
     all_qbanks = QuestionBank.objects.all().order_by('-created_at')
