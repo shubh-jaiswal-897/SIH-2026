@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load competency_tags %}
 
-
 {% block title %}Officer Dashboard - SatatSankhyiki{% endblock %}
 
 {% block content %}
@@ -16,23 +15,23 @@
             <div>
                 <div class="flex items-center gap-2 mb-1">
                     <span class="bg-amber-500/20 text-amber-300 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-amber-500/30">
-                        {{ user.cadre }} Cadre
+                        <span data-i18n="cadre">Cadre</span>: {{ user.cadre }}
                     </span>
                     <span class="bg-slate-700 text-slate-300 text-xs px-2.5 py-0.5 rounded-full">
-                        {{ user.department_wing }} Wing
+                        <span data-i18n="wing">Wing</span>: {{ user.department_wing }}
                     </span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                    Welcome, Officer {{ user.get_full_name|default:user.username }}
+                    <span data-i18n="welcome">Welcome, Officer</span> {{ user.get_full_name|default:user.username }}
                 </h1>
                 <p class="text-sm text-slate-400 mt-1">
-                    Designation: <span class="text-slate-200 font-medium">{{ user.designation }}</span> • Employee Code: <span class="font-mono text-amber-400">{{ user.employee_code|default:"ISS-2026-042" }}</span>
+                    <span data-i18n="designation">Designation</span>: <span class="text-slate-200 font-medium">{{ user.designation }}</span> • <span data-i18n="empCode">Employee Code</span>: <span class="font-mono text-amber-400">{{ user.employee_code|default:"ISS-2026-042" }}</span>
                 </p>
             </div>
             
             <div class="flex gap-3">
                 <a href="{% url 'assessment_upload' %}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2.5 rounded-xl shadow-lg transition text-sm flex items-center gap-2">
-                    <i data-lucide="upload-cloud" class="w-4 h-4"></i> Upload Document & Generate MCQs
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i> <span data-i18n="uploadBtn">Upload Document & Generate MCQs</span>
                 </a>
             </div>
         </div>
@@ -47,12 +46,12 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                            <i data-lucide="target" class="w-5 h-5 text-amber-500"></i> Mission Karmayogi FRAC Competency Gaps
+                            <i data-lucide="target" class="w-5 h-5 text-amber-500"></i> <span data-i18n="fracGaps">Mission Karmayogi FRAC Competency Gaps</span>
                         </h2>
-                        <p class="text-xs text-slate-500">Comparing your evaluated proficiency against role target levels (Levels 1 to 5)</p>
+                        <p class="text-xs text-slate-500" data-i18n="gapDesc">Comparing your evaluated proficiency against role target levels (Levels 1 to 5)</p>
                     </div>
                     <a href="{% url 'competency_matrix' %}" class="text-xs font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1">
-                        View Full Matrix <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        <span data-i18n="viewFullMatrix">View Full Matrix</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>
 
@@ -65,11 +64,11 @@
             <!-- Summary Badges -->
             <div class="grid grid-cols-3 gap-3 mt-6 pt-4 border-t border-slate-100">
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
-                    <div class="text-xs font-semibold text-slate-500 uppercase">Assessed Competencies</div>
+                    <div class="text-xs font-semibold text-slate-500 uppercase" data-i18n="assessedComp">Assessed Competencies</div>
                     <div class="text-xl font-bold text-slate-900 mt-0.5">{{ gaps|length }}</div>
                 </div>
                 <div class="bg-amber-50 p-3 rounded-xl border border-amber-100 text-center">
-                    <div class="text-xs font-semibold text-amber-700 uppercase">Active Gaps</div>
+                    <div class="text-xs font-semibold text-amber-700 uppercase" data-i18n="activeGaps">Active Gaps</div>
                     <div class="text-xl font-bold text-amber-800 mt-0.5">
                         {% with gaps|length as total %}
                         {% count_gaps gaps %}
@@ -77,7 +76,7 @@
                     </div>
                 </div>
                 <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100 text-center">
-                    <div class="text-xs font-semibold text-emerald-700 uppercase">Average Proficiency</div>
+                    <div class="text-xs font-semibold text-emerald-700 uppercase" data-i18n="avgProficiency">Average Proficiency</div>
                     <div class="text-xl font-bold text-emerald-800 mt-0.5">3.2 / 5.0</div>
                 </div>
             </div>
@@ -88,11 +87,11 @@
             <div>
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i> Recommended iGOT Courses
+                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i> <span data-i18n="recommendedCourses">Recommended iGOT Courses</span>
                     </h2>
-                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">AI Matched</span>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full" data-i18n="aiMatched">AI Matched</span>
                 </div>
-                <p class="text-xs text-slate-500 mb-4">Personalized recommendations addressing your specific competency gaps</p>
+                <p class="text-xs text-slate-500 mb-4" data-i18n="recDesc">Personalized recommendations addressing your specific competency gaps</p>
 
                 <div class="space-y-3">
                     {% for rec in recommendations %}
@@ -117,7 +116,7 @@
                                 {% endif %}
                             </div>
                             <a href="{% url 'igot_enroll' rec.course.id %}" class="text-xs bg-slate-900 hover:bg-slate-800 text-white font-medium px-2.5 py-1 rounded-lg transition">
-                                {% if rec.is_enrolled %}In Progress{% else %}Enroll Now{% endif %}
+                                {% if rec.is_enrolled %}<span data-i18n="inProgress">In Progress</span>{% else %}<span data-i18n="enrollNow">Enroll Now</span>{% endif %}
                             </a>
                         </div>
                     </div>
@@ -129,7 +128,7 @@
 
             <div class="mt-4 pt-3 border-t border-slate-100 text-center">
                 <a href="{% url 'igot_courses' %}" class="text-xs font-semibold text-amber-600 hover:text-amber-700 flex items-center justify-center gap-1">
-                    Explore All iGOT Karmayogi Courses <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    <span data-i18n="exploreAllCourses">Explore All iGOT Karmayogi Courses</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
             </div>
         </div>
@@ -140,11 +139,11 @@
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="check-square" class="w-5 h-5 text-amber-500"></i> Recent Assessment & Quiz History
+                    <i data-lucide="check-square" class="w-5 h-5 text-amber-500"></i> <span data-i18n="recentAssessments">Recent Assessment & Quiz History</span>
                 </h2>
-                <p class="text-xs text-slate-500">Track your performance on MoSPI RAG-generated Bloom's taxonomy quizzes</p>
+                <p class="text-xs text-slate-500" data-i18n="perfDesc">Track your performance on MoSPI RAG-generated Bloom's taxonomy quizzes</p>
             </div>
-            <a href="{% url 'assessment_upload' %}" class="text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition">
+            <a href="{% url 'assessment_upload' %}" class="text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition" data-i18n="takeNewAssessment">
                 Take New Assessment
             </a>
         </div>
@@ -153,11 +152,11 @@
             <table class="w-full text-left text-xs text-slate-600">
                 <thead class="bg-slate-50 text-slate-700 uppercase font-semibold text-[10px]">
                     <tr>
-                        <th class="px-4 py-3 rounded-l-lg">Question Bank</th>
-                        <th class="px-4 py-3">Score</th>
-                        <th class="px-4 py-3">Percentage</th>
-                        <th class="px-4 py-3">Date Completed</th>
-                        <th class="px-4 py-3 rounded-r-lg text-right">Action</th>
+                        <th class="px-4 py-3 rounded-l-lg" data-i18n="questionBank">Question Bank</th>
+                        <th class="px-4 py-3" data-i18n="score">Score</th>
+                        <th class="px-4 py-3" data-i18n="percentage">Percentage</th>
+                        <th class="px-4 py-3" data-i18n="dateCompleted">Date Completed</th>
+                        <th class="px-4 py-3 rounded-r-lg text-right" data-i18n="action">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -172,12 +171,12 @@
                         </td>
                         <td class="px-4 py-3 text-slate-500">{{ att.completed_at|date:"d M Y, H:i" }}</td>
                         <td class="px-4 py-3 text-right">
-                            <a href="{% url 'take_quiz' att.question_bank.id %}" class="text-amber-600 font-semibold hover:underline">Re-take Quiz</a>
+                            <a href="{% url 'take_quiz' att.question_bank.id %}" class="text-amber-600 font-semibold hover:underline" data-i18n="retakeQuiz">Re-take Quiz</a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center py-6 text-slate-400 italic">
+                        <td colspan="5" class="text-center py-6 text-slate-400 italic" data-i18n="noQuizAttempts">
                             No quiz attempts yet. Upload a document or select an existing question bank to test your knowledge!
                         </td>
                     </tr>

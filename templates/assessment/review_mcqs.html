@@ -9,14 +9,14 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <span class="bg-amber-500 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded-full uppercase">
+                <span class="bg-amber-500 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded-full uppercase" data-i18n="evaluatorReviewTitle">
                     NSSTA Evaluator Review
                 </span>
-                <span class="text-xs text-slate-400">Human-In-The-Loop Validation</span>
+                <span class="text-xs text-slate-400" data-i18n="humanInTheLoop">Human-In-The-Loop Validation</span>
             </div>
             <h1 class="text-2xl font-bold tracking-tight text-white">{{ document.title }}</h1>
             <p class="text-xs text-slate-400 mt-1">
-                Category: {{ document.get_document_type_display }} • Chunks Analyzed: <span class="font-mono text-amber-400">{{ document.chunks_count }}</span>
+                <span data-i18n="category">Category</span>: {{ document.get_document_type_display }} • <span data-i18n="chunks">Chunks Analyzed</span>: <span class="font-mono text-amber-400">{{ document.chunks_count }}</span>
             </p>
         </div>
 
@@ -26,11 +26,11 @@
                 {% csrf_token %}
                 <input type="hidden" name="action" value="approve_all">
                 <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs shadow-lg transition flex items-center gap-2">
-                    <i data-lucide="check-check" class="w-4 h-4"></i> Approve & Publish All MCQs
+                    <i data-lucide="check-check" class="w-4 h-4"></i> <span data-i18n="approveAll">Approve & Publish All MCQs</span>
                 </button>
             </form>
             <a href="{% url 'take_quiz' question_bank.id %}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
-                <i data-lucide="play" class="w-4 h-4 fill-current"></i> Test Quiz
+                <i data-lucide="play" class="w-4 h-4 fill-current"></i> <span data-i18n="testQuiz">Test Quiz</span>
             </a>
             {% endif %}
         </div>
@@ -70,9 +70,9 @@
                         <button type="submit" class="text-xs font-semibold px-3 py-1 rounded-lg border transition flex items-center gap-1.5
                             {% if q.is_verified %}bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100{% else %}bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100{% endif %}">
                             {% if q.is_verified %}
-                            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Verified
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> <span data-i18n="verified">Verified</span>
                             {% else %}
-                            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i> Unverified (Approve)
+                            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i> <span data-i18n="unverified">Unverified (Approve)</span>
                             {% endif %}
                         </button>
                     </form>
@@ -99,12 +99,12 @@
             <!-- Rationale & Citation Snippet -->
             <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 text-xs space-y-1.5">
                 <div class="font-semibold text-slate-800 flex items-center gap-1.5">
-                    <i data-lucide="book-open" class="w-4 h-4 text-amber-500"></i> Evaluation Rationale:
+                    <i data-lucide="book-open" class="w-4 h-4 text-amber-500"></i> <span data-i18n="evalRationale">Evaluation Rationale</span>:
                 </div>
                 <p class="text-slate-600">{{ q.explanation }}</p>
                 {% if q.source_citation %}
                 <div class="text-[11px] text-slate-500 font-mono pt-1 border-t border-slate-200 flex items-center gap-1">
-                    <i data-lucide="quote" class="w-3 h-3 text-slate-400"></i> Source Citation: <span class="text-slate-800 font-semibold">{{ q.source_citation }}</span>
+                    <i data-lucide="quote" class="w-3 h-3 text-slate-400"></i> <span data-i18n="sourceCitation">Source Citation</span>: <span class="text-slate-800 font-semibold">{{ q.source_citation }}</span>
                 </div>
                 {% endif %}
             </div>

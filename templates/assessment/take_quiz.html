@@ -9,7 +9,7 @@
     <!-- Quiz Top Header Bar -->
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-xl border border-slate-800 flex justify-between items-center">
         <div>
-            <span class="bg-amber-500 text-slate-900 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">
+            <span class="bg-amber-500 text-slate-900 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase" data-i18n="officialEval">
                 Official MoSPI Competency Evaluation
             </span>
             <h1 class="text-xl font-bold text-white mt-1">{{ qbank.title }}</h1>
@@ -54,20 +54,20 @@
             <!-- Navigation Controls -->
             <div class="flex justify-between items-center pt-6 border-t border-slate-100">
                 <button type="button" @click="if(currentQ > 0) currentQ--" :disabled="currentQ === 0"
-                        class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs disabled:opacity-50 transition">
+                        class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs disabled:opacity-50 transition" data-i18n="prevQ">
                     Previous Question
                 </button>
 
                 <div x-show="currentQ < totalQ - 1">
                     <button type="button" @click="currentQ++"
                             class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-                        Next Question <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        <span data-i18n="nextQ">Next Question</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </button>
                 </div>
 
                 <div x-show="currentQ === totalQ - 1">
                     <button type="submit" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-xl text-xs shadow-lg transition flex items-center gap-1.5">
-                        <i data-lucide="check-circle" class="w-4 h-4"></i> Submit Quiz & View Rationale
+                        <i data-lucide="check-circle" class="w-4 h-4"></i> <span data-i18n="submitQuiz">Submit Quiz & View Rationale</span>
                     </button>
                 </div>
             </div>

@@ -8,16 +8,16 @@
     <!-- Header Card -->
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase" data-i18n="frac">
                 Mission Karmayogi FRAC Framework
             </span>
-            <h1 class="text-2xl font-bold text-slate-900 mt-1">Official MoSPI Competency Matrix</h1>
+            <h1 class="text-2xl font-bold text-slate-900 mt-1" data-i18n="officialMatrixTitle">Official MoSPI Competency Matrix</h1>
             <p class="text-xs text-slate-500 mt-0.5">
-                Evaluated proficiency levels vs target role requirements for cadre <span class="font-bold text-slate-800">{{ user.cadre }}</span> ({{ user.designation }})
+                <span data-i18n="matrixSub">Evaluated proficiency levels vs target role requirements for cadre</span> <span class="font-bold text-slate-800">{{ user.cadre }}</span> ({{ user.designation }})
             </p>
         </div>
 
-        <a href="{% url 'officer_dashboard' %}" class="bg-slate-900 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow transition">
+        <a href="{% url 'officer_dashboard' %}" class="bg-slate-900 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow transition" data-i18n="backToDashboard">
             Back to Dashboard
         </a>
     </div>
@@ -28,12 +28,12 @@
             <table class="w-full text-left text-xs text-slate-600">
                 <thead class="bg-slate-50 text-slate-700 uppercase font-semibold text-[10px]">
                     <tr>
-                        <th class="px-4 py-3 rounded-l-lg">Official Code</th>
-                        <th class="px-4 py-3">Competency Name</th>
-                        <th class="px-4 py-3">Category Type</th>
-                        <th class="px-4 py-3 text-center">Evaluated Level</th>
-                        <th class="px-4 py-3 text-center">Target Level</th>
-                        <th class="px-4 py-3 rounded-r-lg text-center">Gap Status</th>
+                        <th class="px-4 py-3 rounded-l-lg" data-i18n="officialCode">Official Code</th>
+                        <th class="px-4 py-3" data-i18n="competencyName">Competency Name</th>
+                        <th class="px-4 py-3" data-i18n="categoryType">Category Type</th>
+                        <th class="px-4 py-3 text-center" data-i18n="evaluatedLevel">Evaluated Level</th>
+                        <th class="px-4 py-3 text-center" data-i18n="targetLevel">Target Level</th>
+                        <th class="px-4 py-3 rounded-r-lg text-center" data-i18n="gapStatus">Gap Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -64,7 +64,7 @@
                                 Gap: -{{ item.gap }} Level{% if item.gap > 1 %}s{% endif %}
                             </span>
                             {% else %}
-                            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1">
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1" data-i18n="competent">
                                 Competent
                             </span>
                             {% endif %}
