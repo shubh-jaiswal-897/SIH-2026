@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from competencies.models import Competency
+from datetime import timedelta
+from django.utils import timezone
 
 class Document(models.Model):
     class DocTypeChoices(models.TextChoices):
@@ -67,3 +69,28 @@ class QuizAttempt(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - Quiz {self.question_bank.id}: {self.score}/{self.total_questions} ({self.percentage}%)"
+
+
+class SpacedRepetitionReview(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='spaced_reviews')
+    question = models.ForeignKey(MCQQuestion, on_delete=models.CASCADE, related_name='spaced_entries')
+    review_stage = models.PositiveSmallIntegerField(default=1, help_text='Stage 1=Day 3, Stage 2=Day 7, Stage 3=Day 30')
+    next_review_date = models.DateField(default=timezone.now)
+    is_mastered = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'question')
+
+    def schedule_next_stage(self):
+        if self.review_stage == 1:
+            self.review_stage = 2
+            self.next_review_date = timezone.now().date() + timedelta(days=3)
+        elif self.review_stage == 2:
+            self.review_stage = 3
+            self.next_review_date = timezone.now().date() + timedelta(days=7)
+        else:
+            self.is_mastered = True
+        self.save()
+
+    def __str__(self):
+        return f"{self.user.username} | Review Q{self.question.id} (Stage {self.review_stage})"

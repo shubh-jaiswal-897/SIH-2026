@@ -3,7 +3,7 @@
 {% block title %}Interactive Assessment - {{ qbank.title }}{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto space-y-6" x-data="{ currentQ: 0, timer: 600, formattedTimer: '10:00', totalQ: {{ questions|length }} }"
+<div class="max-w-4xl mx-auto space-y-6" x-data="{ currentQ: 0, timer: 600, formattedTimer: '10:00', totalQ: {{ questions|length }}, speaking: false }"
      x-init="setInterval(() => { if(timer > 0) { timer--; let m = Math.floor(timer/60); let s = timer%60; formattedTimer = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s; } }, 1000)">
 
     <!-- Quiz Top Header Bar -->
@@ -15,10 +15,25 @@
             <h1 class="text-xl font-bold text-white mt-1">{{ qbank.title }}</h1>
         </div>
 
-        <!-- Timer Display -->
-        <div class="bg-slate-800 px-4 py-2 rounded-xl border border-slate-700 font-mono text-amber-400 font-bold text-lg flex items-center gap-2">
-            <i data-lucide="clock" class="w-5 h-5 animate-pulse"></i>
-            <span x-text="formattedTimer">10:00</span>
+        <div class="flex items-center gap-4">
+            <!-- Web Speech API Audio Assistant Button -->
+            <button type="button" @click="
+                let text = document.getElementById('q_text_' + currentQ).innerText;
+                let msg = new SpeechSynthesisUtterance(text);
+                msg.lang = (localStorage.getItem('mospi_lang') === 'hi' ? 'hi-IN' : 'en-IN');
+                speaking = true;
+                msg.onend = () => speaking = false;
+                window.speechSynthesis.speak(msg);"
+                class="bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-3 py-1.5 rounded-xl border border-slate-700 text-xs flex items-center gap-1.5 transition">
+                <i data-lucide="volume-2" class="w-4 h-4" :class="speaking ? 'animate-bounce text-amber-300' : ''"></i>
+                <span x-text="speaking ? 'Listening...' : 'Voice Assistant'">Voice Assistant</span>
+            </button>
+
+            <!-- Timer Display -->
+            <div class="bg-slate-800 px-4 py-2 rounded-xl border border-slate-700 font-mono text-amber-400 font-bold text-lg flex items-center gap-2">
+                <i data-lucide="clock" class="w-5 h-5 animate-pulse"></i>
+                <span x-text="formattedTimer">10:00</span>
+            </div>
         </div>
     </div>
 
@@ -38,7 +53,7 @@
             </div>
 
             <!-- Question Text -->
-            <h2 class="text-lg font-bold text-slate-900 leading-snug">{{ q.question_text }}</h2>
+            <h2 id="q_text_{{ forloop.counter0 }}" class="text-lg font-bold text-slate-900 leading-snug">{{ q.question_text }}</h2>
 
             <!-- Options Radio Group -->
             <div class="space-y-3">

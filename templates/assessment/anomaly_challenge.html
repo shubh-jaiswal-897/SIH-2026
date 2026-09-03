@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}MoSPI Live Survey Data Anomaly Audit Challenge - SatatSankhyiki{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-8 shadow-xl border border-slate-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+        <div class="relative z-10">
+            <span class="bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full uppercase">
+                Practical Statistical Audit Simulator
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-2">MoSPI Survey Return Anomaly Audit Challenge</h1>
+            <p class="text-xs text-slate-400 mt-1">
+                Analyze live PLFS, CPI, and NAS survey returns to spot statistical outliers, decimal point errors, and physical improbabilities.
+            </p>
+        </div>
+
+        <a href="{% url 'officer_dashboard' %}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs shadow-lg transition">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Anomaly Cards Grid -->
+    <div class="grid grid-cols-1 gap-6">
+        {% for item in sample_returns %}
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 transition hover:shadow-md" x-data="{ revealed: false, userGuessed: null }">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="bg-slate-900 text-amber-400 font-mono text-xs font-bold px-2.5 py-1 rounded-lg">
+                        {{ item.id }}
+                    </span>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                        {{ item.state }} • {{ item.district }}
+                    </span>
+                </div>
+                <span class="text-xs font-mono text-slate-500">FSU: {{ item.fsu_type }}</span>
+            </div>
+
+            <!-- Survey Return Metrics -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs mb-4">
+                {% if item.reported_weekly_hours %}
+                <div>
+                    <span class="text-slate-500 block">Reported Weekly Hours:</span>
+                    <span class="font-bold text-slate-900 text-sm font-mono">{{ item.reported_weekly_hours }} Hours</span>
+                </div>
+                <div>
+                    <span class="text-slate-500 block">Daily Wage:</span>
+                    <span class="font-bold text-slate-900 text-sm font-mono">Rs {{ item.reported_wage }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-500 block">CWS Status:</span>
+                    <span class="font-bold text-slate-900 text-sm">{{ item.cws_status }}</span>
+                </div>
+                {% endif %}
+
+                {% if item.price_curr_month %}
+                <div>
+                    <span class="text-slate-500 block">Item Name:</span>
+                    <span class="font-bold text-slate-900 text-sm">{{ item.item_name }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-500 block">Prev Month Price:</span>
+                    <span class="font-bold text-slate-900 text-sm font-mono">Rs {{ item.price_prev_month }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-500 block">Current Month Price:</span>
+                    <span class="font-bold text-slate-900 text-sm font-mono text-amber-600">Rs {{ item.price_curr_month }}</span>
+                </div>
+                {% endif %}
+
+                {% if item.gva_reported %}
+                <div>
+                    <span class="text-slate-500 block">GVA Reported:</span>
+                    <span class="font-bold text-slate-900 text-sm font-mono">Rs {{ item.gva_reported }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-500 block">Gross Capital Formation:</span>
+                    <span class="font-bold text-slate-900 text-sm font-mono">Rs {{ item.capital_formation }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Action Prompt -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                <div class="text-xs font-semibold text-slate-700">
+                    Audit Decision: Does this survey return contain a statistical data anomaly?
+                </div>
+
+                <div class="flex gap-3">
+                    <button @click="userGuessed = true; revealed = true" :disabled="revealed"
+                            class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl text-xs shadow transition disabled:opacity-60 flex items-center gap-1">
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Flag Anomaly
+                    </button>
+                    <button @click="userGuessed = false; revealed = true" :disabled="revealed"
+                            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow transition disabled:opacity-60 flex items-center gap-1">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i> Accept Valid
+                    </button>
+                </div>
+            </div>
+
+            <!-- Audit Rationale Revelation -->
+            <div x-show="revealed" class="mt-4 p-4 rounded-xl border text-xs space-y-2"
+                 :class="userGuessed === {{ item.has_anomaly|yesno:'true,false' }} ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-amber-50 border-amber-200 text-amber-900'">
+                <div class="font-bold text-sm flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-amber-500"></i>
+                    <span x-text="userGuessed === {{ item.has_anomaly|yesno:'true,false' }} ? 'Correct Audit Identification!' : 'Audit Discrepancy Noted!'"></span>
+                </div>
+                <p class="text-slate-700 font-medium">{{ item.anomaly_reason }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

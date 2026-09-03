@@ -62,3 +62,25 @@ class LearnerCompetencyScore(models.Model):
     def gap(self):
         """Competency Gap: target_level - evaluated_level"""
         return max(0, self.target_level - self.evaluated_level)
+
+
+class KarmaBadge(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    icon = models.CharField(max_length=50, default='award', help_text='Lucide icon name (e.g., award, shield-check, zap)')
+    description = models.TextField()
+    category = models.CharField(max_length=50, default='General')
+
+    def __str__(self):
+        return f"Badge: {self.name}"
+
+
+class UserBadge(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='badges')
+    badge = models.ForeignKey(KarmaBadge, on_delete=models.CASCADE, related_name='awarded_users')
+    earned_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'badge')
+
+    def __str__(self):
+        return f"{self.user.username} -> {self.badge.name}"

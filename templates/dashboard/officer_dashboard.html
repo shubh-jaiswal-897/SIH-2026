@@ -6,13 +6,14 @@
 {% block content %}
 <div class="space-y-6">
 
-    <!-- Officer Profile Header Card -->
+    <!-- Officer Profile & CPRI Promotion Readiness Card -->
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-700 relative overflow-hidden">
         <div class="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none flex items-center pr-8">
-            <i data-lucide="bar-chart-3" class="w-64 h-64 text-amber-400"></i>
+            <i data-lucide="award" class="w-64 h-64 text-amber-400"></i>
         </div>
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
-            <div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10 items-center">
+            
+            <div class="lg:col-span-2">
                 <div class="flex items-center gap-2 mb-1">
                     <span class="bg-amber-500/20 text-amber-300 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-amber-500/30">
                         <span data-i18n="cadre">Cadre</span>: {{ user.cadre }}
@@ -27,15 +28,58 @@
                 <p class="text-sm text-slate-400 mt-1">
                     <span data-i18n="designation">Designation</span>: <span class="text-slate-200 font-medium">{{ user.designation }}</span> • <span data-i18n="empCode">Employee Code</span>: <span class="font-mono text-amber-400">{{ user.employee_code|default:"ISS-2026-042" }}</span>
                 </p>
+
+                <!-- Unlocked Karma Badges Showcase -->
+                <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-700/60">
+                    <span class="text-xs font-semibold text-slate-400">Karma Badges:</span>
+                    {% for badge in user_badges %}
+                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow">
+                        <i data-lucide="{{ badge.icon }}" class="w-3.5 h-3.5 text-amber-400"></i> {{ badge.name }}
+                    </span>
+                    {% empty %}
+                    <span class="text-xs text-slate-500 italic">No badges unlocked yet.</span>
+                    {% endfor %}
+                </div>
             </div>
-            
-            <div class="flex gap-3">
-                <a href="{% url 'assessment_upload' %}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2.5 rounded-xl shadow-lg transition text-sm flex items-center gap-2">
-                    <i data-lucide="upload-cloud" class="w-4 h-4"></i> <span data-i18n="uploadBtn">Upload Document & Generate MCQs</span>
-                </a>
+
+            <!-- CPRI Score Widget -->
+            <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700 text-center flex flex-col items-center justify-center">
+                <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">Promotion & Posting Readiness (CPRI)</div>
+                <div class="text-4xl font-extrabold text-white font-mono">{{ cpri_score }}%</div>
+                <div class="w-full bg-slate-700 h-2 rounded-full mt-2 overflow-hidden">
+                    <div class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width: {{ cpri_score }}%"></div>
+                </div>
+                <div class="text-[10px] text-slate-400 mt-1.5">Based on FRAC competency gap closure & quiz mastery</div>
             </div>
         </div>
     </div>
+
+    <!-- Quick Enterprise Action Bar -->
+    <div class="flex flex-wrap gap-3">
+        <a href="{% url 'assessment_upload' %}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-2.5 rounded-xl shadow-md transition text-xs flex items-center gap-2">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i> <span data-i18n="uploadBtn">Upload Document & Generate MCQs</span>
+        </a>
+        <a href="{% url 'anomaly_challenge' %}" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-md transition text-xs flex items-center gap-2">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> MoSPI Live Data Anomaly Audit Challenge
+        </a>
+    </div>
+
+    <!-- Spaced Repetition Due Reviews Alert Widget -->
+    {% if reviews_due %}
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-amber-800 font-bold text-sm">
+                <i data-lucide="brain-circuit" class="w-5 h-5 text-amber-600 animate-pulse"></i> Spaced Repetition Memory Reviews Due Today ({{ reviews_due.count }})
+            </div>
+            <p class="text-xs text-amber-700 mt-0.5">
+                AI Forgetting Curve Engine detected concepts you previously got wrong. Review them today to retain long-term statistical mastery!
+            </p>
+        </div>
+        <a href="{% url 'take_quiz' reviews_due.0.question.question_bank.id %}" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow transition">
+            Review Now
+        </a>
+    </div>
+    {% endif %}
 
     <!-- Main Grid: FRAC Competency Radar/Bar Chart & iGOT Recommendations -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

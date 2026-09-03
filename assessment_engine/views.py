@@ -3,22 +3,32 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from competencies.services import get_user_competency_gaps
+from django.utils import timezone
+from competencies.services import get_user_competency_gaps, calculate_officer_cpri
 from igot_integration.services import IGoTRecommenderService
 from igot_integration.models import Enrollment
-from .models import Document, QuestionBank, MCQQuestion, QuizAttempt
+from .models import Document, QuestionBank, MCQQuestion, QuizAttempt, SpacedRepetitionReview
 from .tasks import process_uploaded_document_and_generate_mcqs
 
 @login_required
 def officer_dashboard_view(request):
     """
     Main Officer Dashboard showing FRAC radar/bar chart data,
+    CPRI Promotion Readiness Score, Karma Badges, Spaced Repetition Reviews due,
     current course progress, and iGOT recommendations.
     """
     gaps = get_user_competency_gaps(request.user)
+    cpri_score, user_badges = calculate_officer_cpri(request.user)
     recommendations = IGoTRecommenderService.get_recommendations_for_user(request.user)[:4]
     enrollments = Enrollment.objects.filter(user=request.user)
     recent_attempts = QuizAttempt.objects.filter(user=request.user).order_by('-completed_at')[:5]
+
+    # Spaced Repetition Due Reviews today
+    reviews_due = SpacedRepetitionReview.objects.filter(
+        user=request.user,
+        next_review_date__lte=timezone.now().date(),
+        is_mastered=False
+    )
 
     # Prepare Chart.js data
     chart_labels = [g['competency'].name for g in gaps]
@@ -27,6 +37,9 @@ def officer_dashboard_view(request):
 
     context = {
         'gaps': gaps,
+        'cpri_score': cpri_score,
+        'user_badges': user_badges,
+        'reviews_due': reviews_due,
         'recommendations': recommendations,
         'enrollments': enrollments,
         'recent_attempts': recent_attempts,
@@ -106,7 +119,7 @@ def review_mcqs_view(request, doc_id):
 @login_required
 def take_quiz_view(request, qbank_id):
     """
-    Interactive, timed, distraction-free quiz interface with immediate rationale review.
+    Interactive, timed, distraction-free quiz interface with Web Speech audio assistance & Spaced Repetition memory tracking.
     """
     qbank = get_object_or_404(QuestionBank, id=qbank_id)
     # Get verified questions or fall back to all generated questions
@@ -122,6 +135,13 @@ def take_quiz_view(request, qbank_id):
             user_answers[str(q.id)] = ans
             if ans and ans == q.correct_option:
                 score += 1
+            else:
+                # Schedule Spaced Repetition Review for incorrect answers (Day 3 Forgetting Curve)
+                SpacedRepetitionReview.objects.get_or_create(
+                    user=request.user,
+                    question=q,
+                    defaults={'next_review_date': timezone.now().date() + timezone.timedelta(days=3)}
+                )
 
         attempt = QuizAttempt.objects.create(
             user=request.user,
@@ -142,3 +162,47 @@ def take_quiz_view(request, qbank_id):
         'qbank': qbank,
         'questions': questions
     })
+
+
+@login_required
+def anomaly_challenge_view(request):
+    """
+    Live MoSPI Open Data Survey Anomaly Detection Challenge.
+    Simulates real-world PLFS / CPI survey audit returns for officers to identify statistical outliers.
+    """
+    sample_returns = [
+        {
+            'id': 'RET-PLFS-2026-081',
+            'state': 'Uttar Pradesh',
+            'district': 'Lucknow',
+            'fsu_type': 'Urban UFS Block 104',
+            'reported_weekly_hours': 168,
+            'reported_wage': 450,
+            'cws_status': 'Employed',
+            'has_anomaly': True,
+            'anomaly_reason': 'Improbable 168 weekly hours reported (24 hrs x 7 days) without non-working period. Exceeds PLFS physical thresholds.'
+        },
+        {
+            'id': 'RET-CPI-2026-114',
+            'state': 'Maharashtra',
+            'district': 'Pune',
+            'fsu_type': 'Rural Village Code 401',
+            'item_name': 'Rice (Common Variety)',
+            'price_prev_month': 42.0,
+            'price_curr_month': 420.0,
+            'has_anomaly': True,
+            'anomaly_reason': '1000% single-month price spike (decimal point entry error: Rs 42.00 mis-entered as Rs 420.00).'
+        },
+        {
+            'id': 'RET-NAS-2026-009',
+            'state': 'Karnataka',
+            'district': 'Bengaluru Urban',
+            'fsu_type': 'ASI Industrial Unit',
+            'gva_reported': 1250000,
+            'capital_formation': 300000,
+            'has_anomaly': False,
+            'anomaly_reason': 'Consistent within expected 3-sigma statistical variance.'
+        }
+    ]
+
+    return render(request, 'assessment/anomaly_challenge.html', {'sample_returns': sample_returns})
