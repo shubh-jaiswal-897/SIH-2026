@@ -1,0 +1,14 @@
+# Python & Django
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+db.sqlite3
+media/uploaded_docs/*
+!media/uploaded_docs/.gitkeep
+staticfiles/
+.env
+.idea/
+.vscode/
+*.log

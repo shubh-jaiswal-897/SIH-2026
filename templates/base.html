@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SatatSankhyiki - MoSPI AI Upskilling Platform{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Government Header Banner -->
+    <div class="bg-slate-900 border-b border-slate-800 text-white text-xs py-1.5 px-4 sm:px-8 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <span class="font-bold tracking-wider text-amber-400">GOVERNMENT OF INDIA</span>
+            <span class="text-slate-400">|</span>
+            <span class="text-slate-300">Ministry of Statistics and Programme Implementation (MoSPI)</span>
+        </div>
+        <div class="flex items-center gap-4 text-slate-300">
+            <span>Mission Karmayogi FRAC Compliant</span>
+            <span>NSSTA Portal</span>
+        </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <nav class="bg-slate-800 border-b border-slate-700 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Branding -->
+                <div class="flex items-center gap-3">
+                    <a href="{% url 'officer_dashboard' %}" class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center font-black text-slate-900 text-xl shadow-lg">
+                            SS
+                        </div>
+                        <div>
+                            <div class="font-bold text-lg leading-none tracking-tight text-white">SatatSankhyiki</div>
+                            <div class="text-[11px] text-slate-400 font-medium">MoSPI Competency & iGOT Ecosystem</div>
+                        </div>
+                    </a>
+                </div>
+
+                {% if user.is_authenticated %}
+                <!-- Nav Links -->
+                <div class="hidden md:flex items-center space-x-1 font-medium text-sm">
+                    <a href="{% url 'officer_dashboard' %}" class="px-3 py-2 rounded-md transition hover:bg-slate-700 {% if request.resolver_match.url_name == 'officer_dashboard' %}bg-slate-700 text-amber-400 font-semibold{% else %}text-slate-300{% endif %} flex items-center gap-2">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                    </a>
+                    <a href="{% url 'competency_matrix' %}" class="px-3 py-2 rounded-md transition hover:bg-slate-700 {% if request.resolver_match.url_name == 'competency_matrix' %}bg-slate-700 text-amber-400 font-semibold{% else %}text-slate-300{% endif %} flex items-center gap-2">
+                        <i data-lucide="award" class="w-4 h-4"></i> FRAC Matrix
+                    </a>
+                    <a href="{% url 'igot_courses' %}" class="px-3 py-2 rounded-md transition hover:bg-slate-700 {% if request.resolver_match.url_name == 'igot_courses' %}bg-slate-700 text-amber-400 font-semibold{% else %}text-slate-300{% endif %} flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-4 h-4"></i> iGOT Courses
+                    </a>
+                    <a href="{% url 'assessment_upload' %}" class="px-3 py-2 rounded-md transition hover:bg-slate-700 {% if request.resolver_match.url_name == 'assessment_upload' %}bg-slate-700 text-amber-400 font-semibold{% else %}text-slate-300{% endif %} flex items-center gap-2">
+                        <i data-lucide="file-up" class="w-4 h-4"></i> RAG Generator
+                    </a>
+                </div>
+
+                <!-- User Profile Badge & Logout -->
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs font-semibold text-white">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="text-[10px] text-amber-400 uppercase font-mono">{{ user.cadre }} • {{ user.department_wing }}</div>
+                    </div>
+                    <a href="{% url 'logout' %}" class="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition" title="Logout">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+        <div class="p-4 rounded-xl border mb-2 flex items-center justify-between text-sm shadow-sm 
+            {% if message.tags == 'error' %}bg-rose-50 text-rose-800 border-rose-200{% elif message.tags == 'success' %}bg-emerald-50 text-emerald-800 border-emerald-200{% else %}bg-sky-50 text-sky-800 border-sky-200{% endif %}">
+            <div class="flex items-center gap-2">
+                <i data-lucide="info" class="w-5 h-5"></i>
+                <span>{{ message }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 text-slate-400 py-6 text-xs text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-medium text-slate-300">SatatSankhyiki — Intelligent Competency-Based Upskilling Platform</p>
+            <p class="mt-1 text-slate-500">Ministry of Statistics & Programme Implementation (MoSPI) • National Statistical Systems Training Academy (NSSTA)</p>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

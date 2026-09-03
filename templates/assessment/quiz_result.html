@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load competency_tags %}
+
+
+{% block title %}Quiz Results & Answer Key Rationale - SatatSankhyiki{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+    <!-- Result Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-8 shadow-xl border border-slate-700 text-center relative overflow-hidden">
+        <div class="relative z-10 space-y-3">
+            <span class="bg-amber-500/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30">
+                Evaluation Submitted Successfully
+            </span>
+            <h1 class="text-3xl font-bold tracking-tight text-white">{{ qbank.title }}</h1>
+            
+            <div class="inline-flex items-center justify-center gap-6 mt-4 p-4 bg-slate-800/80 rounded-2xl border border-slate-700">
+                <div>
+                    <div class="text-xs text-slate-400 font-medium">Your Score</div>
+                    <div class="text-3xl font-extrabold text-white mt-0.5">{{ attempt.score }} / {{ attempt.total_questions }}</div>
+                </div>
+                <div class="h-10 w-px bg-slate-700"></div>
+                <div>
+                    <div class="text-xs text-slate-400 font-medium">Percentage</div>
+                    <div class="text-3xl font-extrabold text-amber-400 mt-0.5">{{ attempt.percentage }}%</div>
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <a href="{% url 'officer_dashboard' %}" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-5 py-2.5 rounded-xl text-xs shadow-lg transition">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Return to Officer Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answer Key & Source Rationale List -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-6">
+        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+            <i data-lucide="book-open" class="w-5 h-5 text-amber-500"></i> Comprehensive Answer Key & MoSPI Citation Rationale
+        </h2>
+
+        <div class="space-y-6">
+            {% for q in questions %}
+            {% with user_answers|get_item:q.id as user_ans %}
+            <div class="p-5 rounded-xl border text-xs space-y-3 transition
+                {% if user_ans == q.correct_option %}bg-emerald-50/40 border-emerald-200{% else %}bg-rose-50/40 border-rose-200{% endif %}">
+                
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-slate-900 text-sm">Question {{ forloop.counter }}</span>
+                    <span class="font-bold px-2.5 py-0.5 rounded-full text-[10px] 
+                        {% if user_ans == q.correct_option %}bg-emerald-100 text-emerald-800{% else %}bg-rose-100 text-rose-800{% endif %}">
+                        {% if user_ans == q.correct_option %}Correct (+1){% else %}Incorrect (Selected {{ user_ans|default:"None" }}){% endif %}
+                    </span>
+                </div>
+
+                <p class="font-semibold text-slate-900 text-sm">{{ q.question_text }}</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {% for opt_key, opt_val in q.options.items %}
+                    <div class="p-2.5 rounded-lg border text-xs flex items-center gap-2 font-medium
+                        {% if opt_key == q.correct_option %}bg-emerald-100 border-emerald-300 text-emerald-900 font-bold{% elif opt_key == user_ans %}bg-rose-100 border-rose-300 text-rose-900 font-bold{% else %}bg-white border-slate-200 text-slate-600{% endif %}">
+                        <span class="font-mono uppercase">{{ opt_key }}.</span>
+                        <span>{{ opt_val }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="bg-white rounded-lg p-3 border border-slate-200 space-y-1 text-slate-700">
+                    <div class="font-bold text-slate-900 flex items-center gap-1">
+                        <i data-lucide="info" class="w-3.5 h-3.5 text-amber-500"></i> Official Rationale:
+                    </div>
+                    <p>{{ q.explanation }}</p>
+                    {% if q.source_citation %}
+                    <div class="text-[11px] text-slate-500 font-mono pt-1 border-t border-slate-100">
+                        Citation: <span class="text-slate-800 font-semibold">{{ q.source_citation }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

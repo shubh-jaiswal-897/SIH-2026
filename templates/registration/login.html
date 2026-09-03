@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In - SatatSankhyiki (MoSPI Portal){% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-12 bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
+    <div class="text-center mb-6">
+        <div class="inline-flex w-12 h-12 rounded-xl bg-amber-500 items-center justify-center font-bold text-slate-900 text-2xl shadow-md mb-2">
+            SS
+        </div>
+        <h2 class="text-2xl font-bold text-slate-900">MoSPI Officer Portal</h2>
+        <p class="text-xs text-slate-500 mt-1">Sign in to access your Mission Karmayogi FRAC Competency Dashboard</p>
+    </div>
+
+    <form method="POST" action="{% url 'login' %}" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Username / Employee Code</label>
+            <input type="text" name="username" id="input_username" required value="officer1"
+                class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition text-sm">
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Password</label>
+            <input type="password" name="password" id="input_password" required value="pass123"
+                class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition text-sm">
+        </div>
+        <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition text-sm">
+            Sign In to Dashboard
+        </button>
+    </form>
+
+    <div class="mt-6 pt-6 border-t border-slate-100 bg-slate-50 p-4 rounded-xl text-xs space-y-2">
+        <div class="font-semibold text-slate-700 flex items-center gap-1.5">
+            <i data-lucide="key" class="w-4 h-4 text-amber-500"></i> Quick Demo Accounts (Pre-configured):
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-slate-600 font-mono">
+            <div class="p-2 bg-white rounded border border-slate-200 cursor-pointer" onclick="document.getElementById('input_username').value='officer1'; document.getElementById('input_password').value='pass123';">
+                <span class="block font-bold text-slate-900">ISS Officer:</span> officer1 / pass123
+            </div>
+            <div class="p-2 bg-white rounded border border-slate-200 cursor-pointer" onclick="document.getElementById('input_username').value='nssta_admin'; document.getElementById('input_password').value='pass123';">
+                <span class="block font-bold text-slate-900">NSSTA Evaluator:</span> nssta_admin / pass123
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

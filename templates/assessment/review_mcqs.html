@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Review & Approve MCQs - SatatSankhyiki{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header Card -->
+    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="bg-amber-500 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded-full uppercase">
+                    NSSTA Evaluator Review
+                </span>
+                <span class="text-xs text-slate-400">Human-In-The-Loop Validation</span>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">{{ document.title }}</h1>
+            <p class="text-xs text-slate-400 mt-1">
+                Category: {{ document.get_document_type_display }} • Chunks Analyzed: <span class="font-mono text-amber-400">{{ document.chunks_count }}</span>
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            {% if question_bank %}
+            <form method="POST" action="{% url 'review_mcqs' document.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve_all">
+                <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs shadow-lg transition flex items-center gap-2">
+                    <i data-lucide="check-check" class="w-4 h-4"></i> Approve & Publish All MCQs
+                </button>
+            </form>
+            <a href="{% url 'take_quiz' question_bank.id %}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                <i data-lucide="play" class="w-4 h-4 fill-current"></i> Test Quiz
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Questions Grid -->
+    <div class="space-y-4">
+        {% for q in questions %}
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 transition {% if q.is_verified %}ring-2 ring-emerald-500/30{% endif %}">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="bg-slate-900 text-white font-mono text-xs px-2.5 py-0.5 rounded-md font-bold">
+                        Q{{ forloop.counter }}
+                    </span>
+                    <!-- Bloom's Taxonomy Badge -->
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full border
+                        {% if q.blooms_level == 'Remembering' %}bg-sky-50 text-sky-700 border-sky-200
+                        {% elif q.blooms_level == 'Understanding' %}bg-indigo-50 text-indigo-700 border-indigo-200
+                        {% elif q.blooms_level == 'Applying' %}bg-amber-50 text-amber-800 border-amber-200
+                        {% else %}bg-purple-50 text-purple-700 border-purple-200{% endif %}">
+                        Bloom's: {{ q.blooms_level }}
+                    </span>
+
+                    {% if q.mapped_competency %}
+                    <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded border border-slate-200">
+                        {{ q.mapped_competency.official_code }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- Verification Status Toggle -->
+                    <form method="POST" action="{% url 'review_mcqs' document.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="toggle_verify">
+                        <input type="hidden" name="mcq_id" value="{{ q.id }}">
+                        <button type="submit" class="text-xs font-semibold px-3 py-1 rounded-lg border transition flex items-center gap-1.5
+                            {% if q.is_verified %}bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100{% else %}bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100{% endif %}">
+                            {% if q.is_verified %}
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Verified
+                            {% else %}
+                            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i> Unverified (Approve)
+                            {% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Question Text -->
+            <h3 class="text-base font-bold text-slate-900 mb-4">{{ q.question_text }}</h3>
+
+            <!-- Options Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                {% for opt_key, opt_val in q.options.items %}
+                <div class="p-3 rounded-xl border text-xs font-medium flex items-center gap-3 transition
+                    {% if opt_key == q.correct_option %}bg-emerald-50/80 border-emerald-300 text-emerald-900 font-semibold ring-1 ring-emerald-400{% else %}bg-slate-50 border-slate-200 text-slate-700{% endif %}">
+                    <span class="w-6 h-6 rounded-lg flex items-center justify-center font-bold font-mono text-xs
+                        {% if opt_key == q.correct_option %}bg-emerald-600 text-white{% else %}bg-slate-200 text-slate-700{% endif %}">
+                        {{ opt_key }}
+                    </span>
+                    <span>{{ opt_val }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Rationale & Citation Snippet -->
+            <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 text-xs space-y-1.5">
+                <div class="font-semibold text-slate-800 flex items-center gap-1.5">
+                    <i data-lucide="book-open" class="w-4 h-4 text-amber-500"></i> Evaluation Rationale:
+                </div>
+                <p class="text-slate-600">{{ q.explanation }}</p>
+                {% if q.source_citation %}
+                <div class="text-[11px] text-slate-500 font-mono pt-1 border-t border-slate-200 flex items-center gap-1">
+                    <i data-lucide="quote" class="w-3 h-3 text-slate-400"></i> Source Citation: <span class="text-slate-800 font-semibold">{{ q.source_citation }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="bg-white rounded-2xl p-12 text-center text-slate-400 italic">
+            No MCQs extracted for this document yet. Please wait for async processing to finish or re-trigger extraction.
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}FRAC Competency Matrix - SatatSankhyiki{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header Card -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                Mission Karmayogi FRAC Framework
+            </span>
+            <h1 class="text-2xl font-bold text-slate-900 mt-1">Official MoSPI Competency Matrix</h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+                Evaluated proficiency levels vs target role requirements for cadre <span class="font-bold text-slate-800">{{ user.cadre }}</span> ({{ user.designation }})
+            </p>
+        </div>
+
+        <a href="{% url 'officer_dashboard' %}" class="bg-slate-900 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow transition">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Competency Table -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-slate-700 uppercase font-semibold text-[10px]">
+                    <tr>
+                        <th class="px-4 py-3 rounded-l-lg">Official Code</th>
+                        <th class="px-4 py-3">Competency Name</th>
+                        <th class="px-4 py-3">Category Type</th>
+                        <th class="px-4 py-3 text-center">Evaluated Level</th>
+                        <th class="px-4 py-3 text-center">Target Level</th>
+                        <th class="px-4 py-3 rounded-r-lg text-center">Gap Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for item in gaps %}
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-4 py-3.5 font-mono font-bold text-slate-900">{{ item.competency.official_code }}</td>
+                        <td class="px-4 py-3.5">
+                            <div class="font-bold text-slate-900 text-sm">{{ item.competency.name }}</div>
+                            <div class="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{{ item.competency.description }}</div>
+                        </td>
+                        <td class="px-4 py-3.5">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold
+                                {% if item.competency.type == 'DOMAIN' %}bg-amber-100 text-amber-800
+                                {% elif item.competency.type == 'FUNCTIONAL' %}bg-sky-100 text-sky-800
+                                {% else %}bg-purple-100 text-purple-800{% endif %}">
+                                {{ item.competency.get_type_display }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-center font-bold text-slate-900 font-mono text-sm">
+                            Level {{ item.current_level }} / 5
+                        </td>
+                        <td class="px-4 py-3.5 text-center font-bold text-slate-500 font-mono text-sm">
+                            Level {{ item.target_level }} / 5
+                        </td>
+                        <td class="px-4 py-3.5 text-center">
+                            {% if item.gap > 0 %}
+                            <span class="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1">
+                                Gap: -{{ item.gap }} Level{% if item.gap > 1 %}s{% endif %}
+                            </span>
+                            {% else %}
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1">
+                                Competent
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-slate-400 italic">No competencies mapped.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
